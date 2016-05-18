@@ -3,6 +3,7 @@ import count from '../reducers/count';
 
 const createStore = reducer => {
   let state;
+  let callbacks = [];
 
   let store = {
     getState() {
@@ -11,6 +12,14 @@ const createStore = reducer => {
 
     dispatch(action) {
       state = reducer(state, action);
+      callbacks.forEach(callback => callback());
+    },
+
+    subscribe(newCallback) {
+      callbacks.push(newCallback);
+      return () => {
+        callbacks = callbacks.filter(callback => callback !== newCallback);
+      };
     }
   };
 
